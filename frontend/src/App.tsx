@@ -1,8 +1,14 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import useGetCareRecipients from './hooks/careRecipients/useGetCareRecipients';
 
 function App() {
+
+  const { data, isLoading } = useGetCareRecipients();
+
+  console.log(data)
+
   return (
     <div className="App">
       <header className="App-header">

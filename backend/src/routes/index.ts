@@ -7,12 +7,6 @@ import testCareRecipientsController from "../controllers/testCareRecipientsContr
 
 import eventController from "../controllers/eventController";
 
-// Dummy
-router.get("/hello", (req, res) => {
-  console.log(req);
-  res.send("hello world");
-});
-
 router.get("/care-recipients", testCareRecipientsController.findAll);
 
 router.get("/caregivers", testCaregiversController.findAll);
