@@ -1,7 +1,5 @@
 // would normally separate this out into sub-directories/files
 // but that would be overkill for this
-import * as dotenv from "dotenv";
-dotenv.config();
 
 const pathBase = `${process.env.REACT_APP_API_URL}`
 
