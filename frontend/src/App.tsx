@@ -1,30 +1,22 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+
+// import './App.css';
 import useGetCareRecipients from './hooks/careRecipients/useGetCareRecipients';
 
 function App() {
 
   const { data, isLoading } = useGetCareRecipients();
 
-  console.log(data)
-
+  // console.log(data.data)
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      select a care recipient
+      <select name="care recipient" id="cars">
+        {data && Array.isArray(data) && data.map((recipient :any) => {
+          return <option>{recipient.name}</option>
+        })}
+      </select>
+
     </div>
   );
 }

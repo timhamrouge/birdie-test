@@ -2,8 +2,19 @@ import { useEffect, useState } from 'react';
 
 import { careRecipientsPath } from '../../services/paths';
 
+interface CareRecipient {
+  id: number;
+  name: string;
+}
+
+interface UseGetCareRecipientsResult {
+  data: CareRecipient[] | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
 export default function useGetCareRecipients() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<CareRecipient[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   useEffect(() => {
@@ -16,7 +27,7 @@ export default function useGetCareRecipients() {
           throw new Error('Request failed');
         }
         const jsonData = await response.json();
-        setData(jsonData);
+        setData(jsonData.data);
         setIsLoading(false);
       } catch (error) {
         setError(error.message);
