@@ -1,33 +1,49 @@
 import { Request, Response } from "express";
 import Event from "../models/event";
+import { Op } from "sequelize";
 
 const eventController = {
-  findAll: async (req: Request, res: Response): Promise<Response> => {
-    const page = parseInt(req.query.page as string) || 1; // Current page number
-    const limit = parseInt(req.query.limit as string) || 10; // Number of items per page
-
-    // Calculate the offset based on the current page and limit
-    const offset = (page - 1) * limit;
-
+  findVisitsInfoByCareRecipientId: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
     const queryResult = await Event.findAndCountAll({
-      where: { care_recipient_id: req.params.care_recipient_id },
+      where: {
+        care_recipient_id: req.params.care_recipient_id,
+        visit_id: { [Op.not]: null },
+      },
       order: [["timestamp", "DESC"]],
-      limit,
-      offset,
     });
 
-    // this needs to sort by visit and catalogue that by date for the sake of the graph
     const events = queryResult.rows;
-    const totalItems = queryResult.count;
-    const totalPages = Math.ceil(totalItems / limit);
+    // todo sort types
+    const eventsGroupedByVisit = events.reduce((acc: any, event: any) => {
+      if (!acc[event.visit_id]) acc[event.visit_id] = [];
 
-    return res.json({
-      page,
-      limit,
-      totalItems,
-      totalPages,
-      events,
+      acc[event.visit_id].push(event);
+
+      return acc;
+    }, {});
+
+    const visitsGroupedByDate = events.reduce((acc: any, event: any) => {
+      const date = new Date(event.timestamp).toLocaleDateString(); // Get the date portion from the timestamp
+
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+
+      if (!acc[date].includes(event.visit_id)) {
+        acc[date].push(event.visit_id);
+      }
+
+      return acc;
+    }, {});
+
+    return res.status(200).send({
+      eventsGroupedByVisit,
+      visitsGroupedByDate,
     });
+    // error handling
   },
 };
 

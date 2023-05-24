@@ -18,8 +18,8 @@ router.get("/care-recipients", testCareRecipientsController.findAll);
 router.get("/caregivers", testCaregiversController.findAll);
 
 router.get(
-  "/events/:care_recipient_id",
-  eventController.findAllByCareRecipientId
+  "/events/:care_recipient_id/visits",
+  eventController.findVisitsInfoByCareRecipientId
 );
 
 export default router;
