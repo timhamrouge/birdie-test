@@ -1,23 +1,20 @@
 import React from 'react';
 
-// import './App.css';
-import useGetCareRecipients from './hooks/careRecipients/useGetCareRecipients';
+import GlobalStyle from './globalStyles';
+import { Routes, Route } from 'react-router-dom';
+import LandingPage from './components/LandingPage';
+import NavBar from './components/NavBar';
 
 function App() {
-
-  const { data, isLoading } = useGetCareRecipients();
-
-  // console.log(data.data)
   return (
-    <div className="App">
-      select a care recipient
-      <select name="care recipient" id="cars">
-        {data && Array.isArray(data) && data.map((recipient :any) => {
-          return <option>{recipient.name}</option>
-        })}
-      </select>
-
-    </div>
+    <>
+      <GlobalStyle />
+      <NavBar/>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/care-report/:care_recipient_name" element={<>hi tim</>} />
+      </Routes>
+    </>
   );
 }
 
