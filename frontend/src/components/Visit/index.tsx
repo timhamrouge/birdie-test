@@ -1,7 +1,7 @@
 import { Container, VisitHeader, VisitStatus, VisitHeaderSubtitle } from "./styles";
 import { useContext, useEffect, useState } from 'react';
 import { CareRecipientContext } from '../../hooks/careRecipients/careRecipientsContext';
-import format from "date-fns/format";
+import {format, parse } from "date-fns";
 
 const setStatus = (events) => {
   let statusCode = 0;
@@ -34,6 +34,7 @@ const Visit = ({visit}) => {
   const [visitStatus, setVisitStatus] = useState<null | string>(null);
   const { careRecipient } = useContext(CareRecipientContext);
 
+  
   useEffect(() => {
     if (careRecipient) {
       const formattedName = () => {
@@ -42,11 +43,13 @@ const Visit = ({visit}) => {
       }
       setCareRecipientName(formattedName)
     }
-
+    
     if (visit) {
       setVisitStatus(setStatus(visit.events))
     }
   }, [careRecipient, visit])
+
+  const visitDate = parse(visit.visit_date, 'dd/MM/yyyy, HH:mm:ss', new Date());
 
   return(
     <Container>
@@ -55,7 +58,7 @@ const Visit = ({visit}) => {
           {careRecipeintName}
         </h3>
         <VisitHeaderSubtitle>
-          was visited by {visit.events[0].caregiver_id} on {format(new Date(visit.visit_date), 'do LLL y')}
+          was visited by {visit.events[0].caregiver_id} on {format(visitDate, 'do LLL y')}
         </VisitHeaderSubtitle>
       </VisitHeader>
       <VisitStatus status={visitStatus}>

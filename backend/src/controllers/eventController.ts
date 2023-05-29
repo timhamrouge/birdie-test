@@ -15,27 +15,26 @@ const eventController = {
           visit_id: { [Op.not]: null },
         },
         order: [["timestamp", "DESC"]],
-        // fix this
-        // include: [
-        //   {
-        //     model: TestCaregiver,
-        //     attributes: ["first_name", "last_name"],
-        //     as: "careGiver",
-        //   },
-        // ],
       });
 
       const events = queryResult.rows;
       // todo sort types
+      // todo pagination
+
       const eventsGroupedByVisit = events.reduce((acc: any, event: any) => {
-        if (!acc[event.visit_id]) {
-          acc[event.visit_id] = {
-            visit_date: new Date(event.timestamp),
+        const visitId = event.visit_id;
+        const visitRowIndex = acc.findIndex(
+          (visitRow: any) => visitRow.visit_id === visitId
+        );
+
+        if (visitRowIndex < 0) {
+          acc.push({
+            visit_id: visitId,
+            visit_date: new Date(event.timestamp).toLocaleString(),
             events: [event],
-          };
+          });
         } else {
-          // Check if an event with the same timestamp and event type already exists to filter duplicates
-          const duplicateEvent = acc[event.visit_id].events.find(
+          const duplicateEvent = acc[visitRowIndex].events.find(
             (existingEvent: any) => {
               return (
                 existingEvent.timestamp === event.timestamp &&
@@ -46,33 +45,36 @@ const eventController = {
 
           if (!duplicateEvent) {
             // Push the event into the array if no duplicate is found
-            acc[event.visit_id].events.push(event);
+            acc[visitRowIndex].events.push(event);
           }
         }
 
         return acc;
-      }, {});
-      // Convert the values of the acc object into an array
+      }, []);
 
-      // i think we need to sort visits
+      const visitsGroupedByDate = eventsGroupedByVisit
+        .reduce((acc: any, visit: any) => {
+          const date = visit.visit_date.split(",")[0];
 
-      const visitsGroupedByDate = events.reduce((acc: any, event: any) => {
-        const date = new Date(event.timestamp).toLocaleDateString(); // Get the date portion from the timestamp
+          const dateRowIndex = acc.findIndex(
+            (dateRow: any) => dateRow.date === date
+          );
 
-        if (!acc[date]) {
-          acc[date] = [];
-        }
+          if (dateRowIndex < 0) {
+            acc.push({
+              date: date,
+              visit_count: 1,
+            });
+          } else {
+            acc[dateRowIndex].visit_count++;
+          }
 
-        if (!acc[date].includes(event.visit_id)) {
-          acc[date].push(event.visit_id);
-        }
-
-        return acc;
-      }, {});
-
-      // console.log(eventsGroupedByVisit);
+          return acc;
+        }, [])
+        .reverse();
 
       return res.status(200).send({
+        total: queryResult.count,
         eventsGroupedByVisit,
         visitsGroupedByDate,
       });

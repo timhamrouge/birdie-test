@@ -10,7 +10,7 @@ import VisitList from '../VisitList';
 
 const CareRecordsPage = () => {
   // fix this empty array state
-  const [visits, setVisits] = useState({});
+  const [visits, setVisits] = useState([]);
   const [visitsGroupedByDate, setVisitsGroupedByDate] = useState({});
 
 
@@ -18,6 +18,8 @@ const CareRecordsPage = () => {
   const { careRecipient } = useContext(CareRecipientContext);
 
   const {data: events, isLoading: eventsLoading} = useGetEvents(careRecipient?.id);
+
+
 
   console.log(events)
 
@@ -52,7 +54,7 @@ const CareRecordsPage = () => {
         return (<Visit visit={visits[visit]}/>)
       })} */}
       <CareRecordsHeader visits={visitsGroupedByDate!}/>
-      {/* <VisitList visits={visits}/> */}
+      <VisitList visits={visits}/>
     </Container>
   )
 };

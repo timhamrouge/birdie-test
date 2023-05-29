@@ -1,15 +1,15 @@
 import Visit from '../Visit';
 
 
-const VisitList = ({visits, }) => {
+const VisitList = ({visits}) => {
 
   console.log(visits)
 
   return(
     <>
-      {visits && Object.keys(visits).map(visit => {
+      {visits && visits.map(visit => {
         // console.log(' timpthy', visit)
-        return (<Visit visit={visits[visit]}/>)
+        return (<Visit visit={visit}/>)
       })}
     </>
   )
