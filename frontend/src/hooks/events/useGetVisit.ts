@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { eventsPath } from '../../services/paths';
+import { visitPath } from '../../services/paths';
 
-export default function useGetEvents(careRecipientId : string) {
+export default function useGetVisit(careRecipientId : string, visitId : string) {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,9 +10,9 @@ export default function useGetEvents(careRecipientId : string) {
   useEffect(() => {
     const abortController = new AbortController();
 
-    const fetchEvents = async () => {
+    const fetchVisit = async () => {
       try {
-        const response = await fetch(eventsPath(careRecipientId));
+        const response = await fetch(visitPath(careRecipientId, visitId));
         if (!response.ok) {
           throw new Error('Request failed');
         }
@@ -28,13 +28,13 @@ export default function useGetEvents(careRecipientId : string) {
       }
     };
 
-    fetchEvents();
+    fetchVisit();
 
     return () => {
       // Cleanup function: Cancel the asynchronous task
       abortController.abort();
     };
-  }, [careRecipientId]);
+  }, [careRecipientId, visitId]);
 
   return { data, isLoading, error };
 }

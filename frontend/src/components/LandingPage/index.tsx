@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Container, ContentBox, Heading, SelectContainer, Option } from './styles';
 
+import { CareRecipientContext } from '../../hooks/careRecipients/careRecipientsContext';
 import useGetCareRecipients from '../../hooks/careRecipients/useGetCareRecipients';
 
 const LandingPage = () => {
   const [options, setOptions] = useState<null | {value: number, label: string, disabled?: boolean}[]>(null);
+  const { setCareRecipient } = useContext(CareRecipientContext);
 
   const { data } = useGetCareRecipients();
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  console.log(data)
 
   useEffect(() => {
     if (data) {
@@ -22,11 +26,11 @@ const LandingPage = () => {
   }, [data]);
 
   const handleChooseCareRecipient = (event :any) => {
-    const selectedName = data!.find((careRecipient) => { 
+    const careRecipient = data!.find((careRecipient) => { 
       return careRecipient.id === event.target.value;
-    })?.name.toLowerCase();
-
-    navigate(`care-report/${selectedName}`);
+    });
+    setCareRecipient(careRecipient);
+    navigate(`care-report/${careRecipient!.name.toLocaleLowerCase()}`);
   };
 
   return(

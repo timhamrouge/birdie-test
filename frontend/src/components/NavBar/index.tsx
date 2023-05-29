@@ -1,6 +1,5 @@
 import { Root } from "./styles";
 
-
 const NavBar = () => {
   return(
     <Root>
@@ -9,6 +8,6 @@ const NavBar = () => {
       </a>
     </Root>
   )
-}
+};
 
 export default NavBar;

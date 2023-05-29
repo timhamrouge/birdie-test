@@ -8,4 +8,7 @@ export const careRecipientsPath = `${pathBase}/care-recipients`;
 export const caregiversPath = `${pathBase}/caregivers`;
 
 export const eventsPath = (careRecipientId : string) => 
-  `${pathBase}/events/${careRecipientId}/vists`
+  careRecipientId ? `${pathBase}/events/${careRecipientId}/visits` : null;
+
+export const visitPath = (careRecipientId : string, visitId: string) =>  
+(careRecipientId && visitId) ? `${pathBase}/events/${careRecipientId}/visits/${visitId}` : null;
