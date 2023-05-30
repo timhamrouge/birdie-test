@@ -3,6 +3,7 @@ import {
 } from "change-case";
 
 const Event = ({eventType}) => {
+
   return (
     <>
       {sentenceCase(eventType)}

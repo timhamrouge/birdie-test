@@ -18,7 +18,6 @@ const EventX = ({event}) => {
 }
 
 const VisitPage = () => {
-  console.log('hello world')
   const { careRecipient } = useContext(CareRecipientContext);
   const { visit_id: visitId } = useParams();
   const [formattedVisit, setFormattedVisit] = useState([]);
@@ -33,7 +32,6 @@ const VisitPage = () => {
       // this is truly gross but only a quick hack
       visit.events.forEach(event => {
           const caregiverId = event.caregiver_id;
-          console.log(event, 'cgid', caregiverId)
 
           const careGiver = careGivers.find((careGiver) => {
             return careGiver.id === caregiverId
@@ -51,7 +49,6 @@ const VisitPage = () => {
     }
 
   }, [visit, careGivers])
-  console.log('formatted', careGivers, formattedVisit)
 
   const loading = visitLoading || careGiversLoading
   return (
