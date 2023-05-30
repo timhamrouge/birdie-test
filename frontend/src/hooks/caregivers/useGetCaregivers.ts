@@ -15,7 +15,7 @@ export default function useGetCaregivers() {
           throw new Error('Request failed');
         }
         const jsonData = await response.json();
-        setData(jsonData);
+        setData(jsonData.caregivers);
         setIsLoading(false);
       } catch (error) {
         setError(error.message);
