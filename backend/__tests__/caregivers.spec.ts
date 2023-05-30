@@ -7,7 +7,7 @@ describe('/caregivers', () => {
     .get(`/caregivers`)
     .expect(200)
     .expect((res) => {
-      expect(res.body.data.length).toBeGreaterThan(0);
+      expect(res.body.caregivers.length).toBeGreaterThan(0);
     })
   })
 
@@ -16,7 +16,7 @@ describe('/caregivers', () => {
     .get(`/caregivers`)
     .expect(200)
     .expect((res) => {
-      const firstCaregiver = res.body.data[0]
+      const firstCaregiver = res.body.caregivers[0]
       expect(firstCaregiver).toHaveProperty('id');
       expect(firstCaregiver).toHaveProperty('first_name');
       expect(firstCaregiver).toHaveProperty('last_name');

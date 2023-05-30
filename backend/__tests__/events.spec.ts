@@ -57,6 +57,16 @@ describe('/events/:care_recipient_id/visits', () => {
     })
   })
 
+  it('supports pagination', async () => {
+    await request(app)
+    .get(`/events/${careRecipientId}/visits?page=1`)
+    .expect(200)
+    .expect((res) => {
+      expect(res.body.eventsGroupedByVisit).toHaveLength(5);
+      expect(res.body.pages).toBeGreaterThan(0)
+    })
+  })
+
   it('handles missing query params', async () => {
     await request(app)
     .get(`/events//visits`)
