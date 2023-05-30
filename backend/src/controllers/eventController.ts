@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import Event from "../models/event";
 import { Op } from "sequelize";
-// import TestCaregiver from "../models/testCaregiver";
 
 const eventController = {
   findAllVisitsByCareRecipientId: async (
@@ -93,7 +92,60 @@ const eventController = {
         order: [["timestamp", "DESC"]],
       });
 
-      res.status(200).send({ queryResult });
+      const events = queryResult.rows;
+
+      const filteredEvents = events
+        .reduce((acc: any, event: any) => {
+          const duplicateEvent = acc.find((existingEvent: any) => {
+            return (
+              existingEvent.timestamp === event.timestamp &&
+              existingEvent.event_type === event.event_type
+            );
+          });
+
+          if (!duplicateEvent) {
+            acc.push(event);
+          }
+
+          return acc;
+        }, [])
+        .sort((a: any, b: any) => b.timestamp - a.timestamp);
+
+      const checkInTime = filteredEvents.reduce(
+        (earliestTime: any, event: any) => {
+          if (
+            event.event_type === "check_in" &&
+            (!earliestTime || event.timestamp < earliestTime)
+          ) {
+            return event.timestamp;
+          }
+          return earliestTime;
+        },
+        null
+      );
+
+      const checkOutTime = filteredEvents.reduce(
+        (latestTime: any, event: any) => {
+          if (
+            event.event_type === "check_out" &&
+            (!latestTime || event.timestamp > latestTime)
+          ) {
+            return event.timestamp;
+          }
+          return latestTime;
+        },
+        null
+      );
+
+      res.status(200).send({
+        total: filteredEvents.length,
+        events: filteredEvents,
+        checkInTime: new Date(checkInTime).toLocaleString(),
+        checkOutTime: checkOutTime
+          ? new Date(checkOutTime).toLocaleString()
+          : null,
+        visitDate: new Date(checkInTime).toLocaleString(),
+      });
     } catch (err: any) {
       console.log(err);
     }

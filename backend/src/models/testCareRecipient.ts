@@ -1,17 +1,6 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+import { DataTypes } from "sequelize";
 
-import { DataTypes, Sequelize } from "sequelize";
-
-const sequelize = new Sequelize(
-  process.env.DB_NAME!,
-  process.env.DB_USERNAME!,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOSTNAME,
-    dialect: "mysql",
-  }
-);
+import sequelize from "./db";
 
 const TestCareRecipient = sequelize.define(
   "TestCareRecipient",

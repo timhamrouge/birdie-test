@@ -12,7 +12,6 @@ export const Root = styled.header`
   position: fixed;
   z-index: 3;
   position: absolute;
-
   @media (max-width: 800px) {
     padding: 20px;
     padding: 10px 20px;

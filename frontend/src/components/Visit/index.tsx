@@ -2,6 +2,7 @@ import { Container, VisitHeader, VisitStatus, VisitHeaderSubtitle } from "./styl
 import { useContext, useEffect, useState } from 'react';
 import { CareRecipientContext } from '../../hooks/careRecipients/careRecipientsContext';
 import {format, parse } from "date-fns";
+import { Link } from "react-router-dom";
 
 const setStatus = (events) => {
   let statusCode = 0;
@@ -30,40 +31,40 @@ const setStatus = (events) => {
 }
 
 const Visit = ({visit}) => {
-  const [careRecipeintName, setCareRecipientName] = useState(null);
   const [visitStatus, setVisitStatus] = useState<null | string>(null);
   const { careRecipient } = useContext(CareRecipientContext);
 
   
-  useEffect(() => {
-    if (careRecipient) {
-      const formattedName = () => {
-        const firstLetter = careRecipient.name.charAt(0).toUpperCase();
-        return firstLetter + careRecipient.name.slice(1);
-      }
-      setCareRecipientName(formattedName)
-    }
-    
+  useEffect(() => {    
     if (visit) {
       setVisitStatus(setStatus(visit.events))
     }
-  }, [careRecipient, visit])
+  }, [visit])
 
   const visitDate = parse(visit.visit_date, 'dd/MM/yyyy, HH:mm:ss', new Date());
 
   return(
     <Container>
-      <VisitHeader>
-        <h3>
-          {careRecipeintName}
-        </h3>
-        <VisitHeaderSubtitle>
-          was visited by {visit.events[0].caregiver_id} on {format(visitDate, 'do LLL y')}
-        </VisitHeaderSubtitle>
-      </VisitHeader>
-      <VisitStatus status={visitStatus}>
-        {visitStatus}
-      </VisitStatus>
+      <Link to={`/visits/${visit.visit_id}`}
+        style={{
+          width: "100%",
+          textDecoration: "none",
+          flexDirection: "column",
+          color: "#00264d"
+        }}
+      >
+        <VisitHeader>
+          <h3>
+            {careRecipient.name}
+          </h3>
+          <VisitHeaderSubtitle>
+            was visited by {visit.events[0].caregiver_id} on {format(visitDate, 'do LLL y p')}
+          </VisitHeaderSubtitle>
+        </VisitHeader>
+        <VisitStatus status={visitStatus}>
+          {visitStatus}
+        </VisitStatus>
+      </Link>
     </Container>
   )
 };

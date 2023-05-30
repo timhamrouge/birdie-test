@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { Container, ContentBox, Heading, SelectContainer, Option } from './styles';
 
-import { CareRecipientContext } from '../../hooks/careRecipients/careRecipientsContext';
-import useGetCareRecipients from '../../hooks/careRecipients/useGetCareRecipients';
+import { CareRecipientContext } from '../../../hooks/careRecipients/careRecipientsContext';
+import useGetCareRecipients from '../../../hooks/careRecipients/useGetCareRecipients';
 
 const LandingPage = () => {
   const [options, setOptions] = useState<null | {value: number, label: string, disabled?: boolean}[]>(null);
@@ -12,8 +12,6 @@ const LandingPage = () => {
 
   const { data } = useGetCareRecipients();
   const navigate = useNavigate()
-
-  console.log(data)
 
   useEffect(() => {
     if (data) {

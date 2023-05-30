@@ -6,7 +6,7 @@ export const Container = styled.div`
   max-width: 850px;
   margin-right: auto;
   margin-left: auto;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 36px;
     border: 4px solid #ADE1EE;
@@ -14,5 +14,11 @@ export const Container = styled.div`
   @media (max-width: 800px) {
     width: 100%;
   }
-  padding: 16px 40px;
+  padding: 30px 40px;
+`
+
+export const CareRecipientInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
