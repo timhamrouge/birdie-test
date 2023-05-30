@@ -22,6 +22,4 @@ describe('/caregivers', () => {
       expect(firstCaregiver).toHaveProperty('last_name');
     });
   })
-
-  // TODO specs for error handling
 });
