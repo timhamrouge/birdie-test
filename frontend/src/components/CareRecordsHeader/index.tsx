@@ -12,7 +12,7 @@ import { CareRecipientInfo, Container } from './styles';
 interface Props {
   careRecipientName: string;
   lastVisited: string;
-  visits: [];
+  visits: any[]; // Update the type of visits array accordingly
 }
 
 const CareRecordsHeader = ({
@@ -20,7 +20,6 @@ const CareRecordsHeader = ({
   lastVisited,
   careRecipientName
 }: Props) => {
-
   return (
     <Container>
       <CareRecipientInfo>
