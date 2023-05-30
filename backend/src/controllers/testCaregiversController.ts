@@ -5,8 +5,9 @@ const testCaregiversController = {
   findAll: async (_req: Request, res: Response): Promise<any> => {
     try {
       const caregivers = await TestCaregiver.findAll();
+
       return res.status(200).send({
-        data: caregivers,
+        caregivers,
       });
     } catch (err: any) {
       // TODO

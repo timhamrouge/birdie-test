@@ -4,6 +4,7 @@ import { CareRecipientContext } from '../../../hooks/careRecipients/careRecipien
 import useGetEvents from '../../../hooks/events/useGetEvents';
 import useGetCaregivers from '../../../hooks/caregivers/useGetCaregivers';
 import CareRecordsHeader from '../../CareRecordsHeader';
+import ProgressIndicator from '../../ProgressIndicator';
 
 import {format, parse } from "date-fns";
 
@@ -27,7 +28,27 @@ const CareRecordsPage = () => {
 
 
   useEffect(() => {
-    if (events) {
+    if (events && careGivers) {
+
+      // this is truly gross but only a quick hack
+      events.eventsGroupedByVisit.forEach(visit => {
+        visit.events = visit.events.map(event => {
+          const caregiverId = event.caregiver_id;
+
+          const careGiver = careGivers.find((careGiver) => {
+            return careGiver.id === caregiverId
+          });
+
+          if (careGiver) {
+            event.caregiver_id = `${careGiver.first_name} ${careGiver.last_name}`
+          } else {
+            event.caregiver_id = 'a carer.'
+          }
+          
+          return event
+        })
+      })
+
       setVisits(events.eventsGroupedByVisit)
       setVisitsGroupedByDate(events.visitsGroupedByDate)
     }
@@ -36,7 +57,7 @@ const CareRecordsPage = () => {
       const parsedDate = parse(visits[0].visit_date, 'dd/MM/yyyy, HH:mm:ss', new Date());
       setLastVisited(format(parsedDate, 'do LLL y p'))
     }
-  }, [events, visits])
+  }, [events, visits, careGivers])
   
   // handle page refresh as we're not using localStoage
   useEffect(() => {
@@ -45,12 +66,20 @@ const CareRecordsPage = () => {
     }
   }, [careRecipient, navigate])
 
+  const loading = eventsLoading || careGiversLoading;
+
   return(
     <Container>
+      {loading && <ProgressIndicator/>}
+      {!loading && (
+        <>
       <CareRecordsHeader visits={visitsGroupedByDate!} 
       // TODO handle when this is null
       careRecipientName={careRecipient?.name} lastVisited={lastVisited!}/>
       <VisitList visits={visits}/>
+      </>
+      )
+      }
     </Container>
   )
 };
