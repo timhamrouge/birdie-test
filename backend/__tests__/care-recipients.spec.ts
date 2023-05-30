@@ -21,6 +21,4 @@ describe('/care-recipients', () => {
       expect(firstCareRecipient).toHaveProperty('name');
     });
   })
-
-  // TODO specs for error handling
 });

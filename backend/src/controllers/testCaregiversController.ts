@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import TestCaregiver from "../models/testCaregiver";
 
 const testCaregiversController = {
-  findAll: async (_req: Request, res: Response): Promise<any> => {
+  findAll: async (_req: Request, res: Response): Promise<Response | void> => {
     try {
       const caregivers = await TestCaregiver.findAll();
 
@@ -10,7 +10,6 @@ const testCaregiversController = {
         caregivers,
       });
     } catch (err: any) {
-      // TODO
       res.status(500).send();
     }
   },

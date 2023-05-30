@@ -1,12 +1,17 @@
 import { Request, Response } from "express";
 import Event from "../models/event";
 import { Op } from "sequelize";
+import {
+  DateRowAttributes,
+  EventAttributes,
+  VisitRowAttributes,
+} from "../types";
 
 const eventController = {
   findAllVisitsByCareRecipientId: async (
     req: Request,
     res: Response
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const queryResult = await Event.findAndCountAll({
         where: {
@@ -17,46 +22,47 @@ const eventController = {
       });
 
       const events = queryResult.rows;
-      // todo sort types
-      // todo pagination
+      // TODO pagination
 
-      const eventsGroupedByVisit = events.reduce((acc: any, event: any) => {
-        const visitId = event.visit_id;
-        const visitRowIndex = acc.findIndex(
-          (visitRow: any) => visitRow.visit_id === visitId
-        );
-
-        if (visitRowIndex < 0) {
-          acc.push({
-            visit_id: visitId,
-            visit_date: new Date(event.timestamp).toLocaleString(),
-            events: [event],
-          });
-        } else {
-          const duplicateEvent = acc[visitRowIndex].events.find(
-            (existingEvent: any) => {
-              return (
-                existingEvent.timestamp === event.timestamp &&
-                existingEvent.event_type === event.event_type
-              );
-            }
+      const eventsGroupedByVisit = events.reduce(
+        (acc: VisitRowAttributes[], event: any) => {
+          const visitId = event.visit_id;
+          const visitRowIndex = acc.findIndex(
+            (visitRow: VisitRowAttributes) => visitRow.visit_id === visitId
           );
 
-          if (!duplicateEvent) {
-            // Push the event into the array if no duplicate is found
-            acc[visitRowIndex].events.push(event);
-          }
-        }
+          if (visitRowIndex < 0) {
+            acc.push({
+              visit_id: visitId,
+              visit_date: new Date(event.timestamp).toLocaleString(),
+              events: [event],
+            });
+          } else {
+            const duplicateEvent = acc[visitRowIndex].events.find(
+              (existingEvent: EventAttributes) => {
+                return (
+                  existingEvent.timestamp === event.timestamp &&
+                  existingEvent.event_type === event.event_type
+                );
+              }
+            );
 
-        return acc;
-      }, []);
+            if (!duplicateEvent) {
+              acc[visitRowIndex].events.push(event);
+            }
+          }
+
+          return acc;
+        },
+        []
+      );
 
       const visitsGroupedByDate = eventsGroupedByVisit
-        .reduce((acc: any, visit: any) => {
+        .reduce((acc: DateRowAttributes[], visit: VisitRowAttributes) => {
           const date = visit.visit_date.split(",")[0];
 
           const dateRowIndex = acc.findIndex(
-            (dateRow: any) => dateRow.date === date
+            (dateRow: DateRowAttributes) => dateRow.date === date
           );
 
           if (dateRowIndex < 0) {
@@ -77,12 +83,14 @@ const eventController = {
         eventsGroupedByVisit,
         visitsGroupedByDate,
       });
-      // error handling
     } catch (err: any) {
-      console.log(err);
+      res.status(500).send();
     }
   },
-  findVisitById: async (req: Request, res: Response): Promise<any> => {
+  findVisitById: async (
+    req: Request,
+    res: Response
+  ): Promise<Response | void> => {
     try {
       const queryResult = await Event.findAndCountAll({
         where: {
@@ -96,7 +104,7 @@ const eventController = {
 
       const filteredEvents = events
         .reduce((acc: any, event: any) => {
-          const duplicateEvent = acc.find((existingEvent: any) => {
+          const duplicateEvent = acc.find((existingEvent: EventAttributes) => {
             return (
               existingEvent.timestamp === event.timestamp &&
               existingEvent.event_type === event.event_type
@@ -112,7 +120,7 @@ const eventController = {
         .sort((a: any, b: any) => b.timestamp - a.timestamp);
 
       const checkInTime = filteredEvents.reduce(
-        (earliestTime: any, event: any) => {
+        (earliestTime: string, event: EventAttributes) => {
           if (
             event.event_type === "check_in" &&
             (!earliestTime || event.timestamp < earliestTime)
@@ -125,7 +133,7 @@ const eventController = {
       );
 
       const checkOutTime = filteredEvents.reduce(
-        (latestTime: any, event: any) => {
+        (latestTime: string, event: EventAttributes) => {
           if (
             event.event_type === "check_out" &&
             (!latestTime || event.timestamp > latestTime)
@@ -147,7 +155,7 @@ const eventController = {
         visitDate: new Date(checkInTime).toLocaleString(),
       });
     } catch (err: any) {
-      console.log(err);
+      res.status(500).send();
     }
   },
 };
