@@ -16,7 +16,7 @@ export const Container = styled.div`
   border: 4px solid #ADE1EE;
   border-radius: 10px;
   @media (max-width: 800px) {
-    width: 100%;
+    width: 80%;
   }
   top:0;
   cursor: pointer;

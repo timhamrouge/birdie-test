@@ -1,3 +1,4 @@
+import { format, parse } from "date-fns";
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,19 +10,18 @@ import CareRecordsHeader from '../../CareRecordsHeader';
 import ProgressIndicator from '../../ProgressIndicator';
 import Visit from '../../Visit';
 
-import { format, parse } from "date-fns";
-
-import { Container } from "./styles";
+import { Button, Container } from "./styles";
 
 const CareRecordsPage = () => {
   const [visits, setVisits] = useState([]);
   const [visitsGroupedByDate, setVisitsGroupedByDate] = useState([]);
   const [lastVisited, setLastVisited] = useState<string | null>(null);
+  const [pageNumber, setPageNumber] = useState<number>(1);
 
   const navigate = useNavigate();
   const { careRecipient } = useContext(CareRecipientContext);
 
-  const { data: events, isLoading: eventsLoading } = useGetEvents(careRecipient?.id);
+  const { data: events, isLoading: eventsLoading } = useGetEvents(careRecipient?.id, pageNumber);
   const { data: careGivers, isLoading: careGiversLoading } = useGetCaregivers();
 
   useEffect(() => {
@@ -44,13 +44,10 @@ const CareRecordsPage = () => {
 
       setVisits(events.eventsGroupedByVisit);
       setVisitsGroupedByDate(events.visitsGroupedByDate);
-    }
-
-    if (visits.length) {
-      const parsedDate = parse(visits[0].visit_date, 'dd/MM/yyyy, HH:mm:ss', new Date());
+      const parsedDate = parse(events.lastVisited, 'dd/MM/yyyy, HH:mm:ss', new Date());
       setLastVisited(format(parsedDate, 'do LLL y p'));
     }
-  }, [events, visits, careGivers]);
+  }, [events, careGivers]);
 
   useEffect(() => {
     if (!careRecipient) {
@@ -58,23 +55,43 @@ const CareRecordsPage = () => {
     }
   }, [careRecipient, navigate]);
 
+  const incrementPage = () => {
+    setPageNumber(pageNumber + 1)
+  }
+
+  const decrementPage = () => {
+    setPageNumber(pageNumber - 1)
+  }
+
   const loading = eventsLoading || careGiversLoading;
 
+  console.log(eventsLoading)
   return (
     <Container>
       {loading && <ProgressIndicator/>}
-      {!loading && (
+      {!loading && events && (
         <>
           <CareRecordsHeader
             visits={visitsGroupedByDate!}
             careRecipientName={careRecipient?.name}
             lastVisited={lastVisited!}
           />
+          <div style={{ marginBottom: "16px" }}>
+            {pageNumber > 1 && (
+              <Button onClick={decrementPage}>
+                Last page
+              </Button>
+            )}
+            {pageNumber !== +events.pages && <Button onClick={incrementPage}>
+              Next page
+            </Button>}
+          </div>
           <div style={{ maxHeight: "100px", width: "100%" }}>
             {visits && visits.map(visit => (
               <Visit visit={visit} key={visit.id} />
             ))}
           </div>
+
         </>
       )}
     </Container>

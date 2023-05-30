@@ -38,7 +38,7 @@ const CareRecordsHeader = ({
           Last visited on {lastVisited}
         </p>
       </CareRecipientInfo>
-      <ResponsiveContainer width="95%" height={300}>
+      <ResponsiveContainer width="80%" height={300}>
         <AreaChart
           data={visits}
           margin={{ top: 50, right: 40, bottom: 50, left: 40 }}

@@ -21,8 +21,11 @@ const eventController = {
         order: [["timestamp", "DESC"]],
       });
 
+      // Extract pagination parameters from the request query
+      const { page = 1, perPage = 5 } = req.query;
+      const offset = (+page - 1) * +perPage;
+
       const events = queryResult.rows;
-      // TODO pagination
 
       const eventsGroupedByVisit = events.reduce(
         (acc: VisitRowAttributes[], event: any) => {
@@ -80,8 +83,13 @@ const eventController = {
 
       return res.status(200).send({
         total: queryResult.count,
-        eventsGroupedByVisit,
+        lastVisited: eventsGroupedByVisit[0].visit_date,
+        eventsGroupedByVisit: eventsGroupedByVisit.slice(
+          offset,
+          offset + +perPage
+        ),
         visitsGroupedByDate,
+        pages: Math.ceil(eventsGroupedByVisit.length / +perPage),
       });
     } catch (err: any) {
       res.status(500).send();

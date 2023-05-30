@@ -2,7 +2,6 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   display: flex;
-  width: 80vh;
   max-width: 850px;
   margin-right: auto;
   margin-left: auto;
@@ -12,7 +11,7 @@ export const Container = styled.div`
     border: 4px solid #ADE1EE;
     border-radius: 10px;
   @media (max-width: 800px) {
-    width: 100%;
+    width: 80%;
   }
   padding: 30px 40px;
 `
